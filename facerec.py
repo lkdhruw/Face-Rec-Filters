@@ -4,8 +4,6 @@ import face_recognition as face
 
 cam = cv2.VideoCapture(0)
 
-doggy_tongue = cv2.imread("./sprites/doggy_tongue.png")
-
 while True:
 
     _, frame = cam.read()
@@ -46,11 +44,9 @@ while True:
             i = k.tolist()
             for j in i:
                 # plots small circles in the coordinates (j)
-                # cv2.circle(frame, tuple(j), 1, (0, 0, 255), -1)
-                # print(face_landmarks[0]['top_lip'])
-                top_lip = face_landmarks[0]['top_lip']
-                bottom_lip = face_landmarks[0]['bottom_lip']
-                frame[top_lip[0]:bottom_lip[0], top_lip[1]:bottom_lip[0]] = doggy_tongue
+                cv2.circle(frame, tuple(j), 1, (0, 0, 255), -1)
+             
+                
 
     cv2.imshow('Face Rec', frame)
 
