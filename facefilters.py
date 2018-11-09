@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import face_recognition as face
 
+doggy_nose = cv2.imread("./sprites/doggy_nose.png")
+
 
 def apply_sprite(sprite, rows, cols):
     seg = frame[rows[0]*4:rows[1]*4, cols[0]*4: cols[1]*4]
@@ -27,27 +29,32 @@ def add_nose_sprite(nose_sprite):
                  (nose_bridge[2][1], nose_tip[0][1]), (nose_tip[0][0], nose_tip[4][0]))
 
 
-doggy_nose = cv2.imread("./sprites/doggy_nose.png")
-frame = cv2.imread("./sprites/Pic.jpg")
-small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+cam = cv2.VideoCapture(0)
 
-face_locations = face.face_locations(small_frame, model='hog')
+while True:
 
-for top, right, bottom, left in face_locations:
-    top *= 4
-    right *= 4
-    bottom *= 4
-    left *= 4
-    cv2.rectangle(frame, (left, top), (right, bottom), (255, 0, 0), 2)
+    _, frame = cam.read()
+    print("Live")
+    small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
 
-face_landmarks = []
+    face_locations = face.face_locations(small_frame, model='hog')
 
-if len(face_locations):
-    face_landmarks = face.face_landmarks(small_frame)
+    for top, right, bottom, left in face_locations:
+        top *= 4
+        right *= 4
+        bottom *= 4
+        left *= 4
+        cv2.rectangle(frame, (left, top), (right, bottom), (255, 0, 0), 2)
 
-add_nose_sprite(doggy_nose)
+    face_landmarks = []
 
-cv2.imshow('Face Rec', frame)
-cv2.imwrite("filter.jpg", frame)
-cv2.waitKey(0)
+    if len(face_locations):
+        face_landmarks = face.face_landmarks(small_frame)
+        add_nose_sprite(doggy_nose)
+
+    cv2.imshow("Frame", frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
 cv2.destroyAllWindows()
