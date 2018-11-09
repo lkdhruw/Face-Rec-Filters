@@ -39,5 +39,6 @@ dst = cv2.add(img1_bg,img2_fg)
 frame[69*4:80*4, 123*4:140*4] = dst
 
 cv2.imshow('Face Rec', frame)
+cv2.imwrite( "filter.jpg", frame)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
