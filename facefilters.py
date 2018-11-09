@@ -3,13 +3,24 @@ import numpy as np
 import face_recognition as face
 
 doggy_nose = cv2.imread("./sprites/doggy_nose.png")
+mustache = cv2.imread("./sprites/mustache.png")
+nose_sprite = doggy_nose
 
 
 def apply_sprite(sprite, rows, cols):
+    # @sprite = sprite to be added
+    # rows, cols = Tuples of the form (start, end) = start and end row/col values where sprite is to be masked
+
+    # Segment the part of the image from the main frame
+    # Eg: for nose, the whole nose part
     seg = frame[rows[0]*4:rows[1]*4, cols[0]*4: cols[1]*4]
     r, c, _ = seg.shape
-    print(rows, cols)
+
+    # Resize sprite to fit segment area
     re_sprite = cv2.resize(sprite, (c, r))
+
+    # Thresholding operations using bitwise
+    # [refer to bitwise section in this https://docs.opencv.org/3.2.0/d0/d86/tutorial_py_image_arithmetics.html ]
 
     img2gray = cv2.cvtColor(re_sprite, cv2.COLOR_BGR2GRAY)
 
@@ -50,11 +61,16 @@ while True:
 
     if len(face_locations):
         face_landmarks = face.face_landmarks(small_frame)
-        add_nose_sprite(doggy_nose)
+        add_nose_sprite(nose_sprite)
 
     cv2.imshow("Frame", frame)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    pressed_key = cv2.waitKey(1) & 0xFF
+    if pressed_key == ord('q'):
         break
+    elif pressed_key == ord('m'):
+        nose_sprite = mustache
+    elif pressed_key == ord('d'):
+        nose_sprite = doggy_nose
 
 cv2.destroyAllWindows()
