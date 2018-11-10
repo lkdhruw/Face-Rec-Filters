@@ -4,8 +4,13 @@ import face_recognition as face
 
 doggy_nose = cv2.imread("./sprites/doggy_nose.png")
 doggy_ears = cv2.imread("./sprites/doggy_ears.png")
+doggy_tongue = cv2.imread("./sprites/doggy_tongue.png")
 mustache = cv2.imread("./sprites/mustache.png")
-nose_sprite = doggy_nose
+rainbow = cv2.imread("./sprites/rainbow.png")
+hat = cv2.imread("./sprites/hat.png")
+what_filter = "mustache"
+
+# cv2.imshow("g", glasses)
 
 
 def apply_sprite(sprite, rows, cols):
@@ -20,6 +25,7 @@ def apply_sprite(sprite, rows, cols):
     # Resize sprite to fit segment area
     try:
         re_sprite = cv2.resize(sprite, (c, r))
+        print(c, r)
     except:
         print("Failed to resize")
         return
@@ -31,6 +37,9 @@ def apply_sprite(sprite, rows, cols):
 
     _, mask = cv2.threshold(img2gray, 5, 255, cv2.THRESH_BINARY)
     mask_inv = cv2.bitwise_not(mask)
+
+    # cv2.imshow("Glass", mask)
+    # cv2.waitKey(0)
 
     img1_bg = cv2.bitwise_and(seg, seg, mask=mask_inv)
     img2_fg = cv2.bitwise_and(re_sprite, re_sprite, mask=mask)
@@ -55,12 +64,45 @@ def add_dog_ears():
     apply_sprite(doggy_ears, (start_row, end_row), (start_col, end_col))
 
 
+def add_hat():
+    left_eyebrow = face_landmarks[0]['left_eyebrow']
+    right_eyebrow = face_landmarks[0]['right_eyebrow']
+    eyebrows = left_eyebrow + right_eyebrow
+    x_values = [tup[0] for tup in eyebrows]
+    y_values = [tup[1] for tup in eyebrows]
+    start_row = min(y_values) - 25
+    end_row = min(y_values) - 5
+    start_col = min(x_values) - 15
+    end_col = max(x_values) + 15
+    apply_sprite(hat, (start_row, end_row), (start_col, end_col))
+
+
+def add_mustache():
+    upper_lip = face_landmarks[0]["top_lip"]
+    x_values = [tup[0] for tup in upper_lip]
+    y_values = [tup[1] for tup in upper_lip]
+    start_row = min(y_values) - 6
+    end_row = max(y_values) - 3
+    start_col = min(x_values) - 2
+    end_col = max(x_values) + 2
+
+    apply_sprite(mustache, (start_row, end_row), (start_col, end_col))
+
+
+def apply_filters():
+    if what_filter == "doggy":
+        add_nose_sprite(doggy_nose)
+        add_dog_ears()
+    elif what_filter == "mustache":
+        add_mustache()
+        add_hat()
+
+
 cam = cv2.VideoCapture(0)
 
 while True:
 
     _, frame = cam.read()
-    print("Live")
     small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
 
     face_locations = face.face_locations(small_frame, model='hog')
@@ -76,8 +118,7 @@ while True:
 
     if len(face_locations):
         face_landmarks = face.face_landmarks(small_frame)
-        add_nose_sprite(nose_sprite)
-        add_dog_ears()
+        apply_filters()
 
     cv2.imshow("Frame", frame)
 
@@ -85,8 +126,9 @@ while True:
     if pressed_key == ord('q'):
         break
     elif pressed_key == ord('m'):
-        nose_sprite = mustache
+        what_filter = "mustache"
     elif pressed_key == ord('d'):
-        nose_sprite = doggy_nose
+        what_filter = "doggy"
 
+print(face_landmarks[0]['bottom_lip'])
 cv2.destroyAllWindows()
