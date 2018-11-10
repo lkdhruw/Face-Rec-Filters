@@ -3,7 +3,8 @@ import numpy as np
 import face_recognition as face
 
 cam = cv2.VideoCapture(0)
-
+cam.set(3,640)
+cam.set(4,480)
 while True:
 
     _, frame = cam.read()

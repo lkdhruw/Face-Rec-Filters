@@ -99,6 +99,8 @@ def apply_filters():
 
 
 cam = cv2.VideoCapture(0)
+cam.set(3,640)
+cam.set(4,480)
 
 while True:
 
