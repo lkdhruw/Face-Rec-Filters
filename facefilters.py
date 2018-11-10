@@ -3,6 +3,7 @@ import numpy as np
 import face_recognition as face
 
 doggy_nose = cv2.imread("./sprites/doggy_nose.png")
+doggy_ears = cv2.imread("./sprites/doggy_ears.png")
 mustache = cv2.imread("./sprites/mustache.png")
 nose_sprite = doggy_nose
 
@@ -17,14 +18,18 @@ def apply_sprite(sprite, rows, cols):
     r, c, _ = seg.shape
 
     # Resize sprite to fit segment area
-    re_sprite = cv2.resize(sprite, (c, r))
+    try:
+        re_sprite = cv2.resize(sprite, (c, r))
+    except:
+        print("Failed to resize")
+        return
 
     # Thresholding operations using bitwise
     # [refer to bitwise section in this https://docs.opencv.org/3.2.0/d0/d86/tutorial_py_image_arithmetics.html ]
 
     img2gray = cv2.cvtColor(re_sprite, cv2.COLOR_BGR2GRAY)
 
-    ret, mask = cv2.threshold(img2gray, 5, 255, cv2.THRESH_BINARY)
+    _, mask = cv2.threshold(img2gray, 5, 255, cv2.THRESH_BINARY)
     mask_inv = cv2.bitwise_not(mask)
 
     img1_bg = cv2.bitwise_and(seg, seg, mask=mask_inv)
@@ -38,6 +43,16 @@ def add_nose_sprite(nose_sprite):
     nose_bridge = face_landmarks[0]['nose_bridge']
     apply_sprite(nose_sprite,
                  (nose_bridge[2][1], nose_tip[0][1]), (nose_tip[0][0], nose_tip[4][0]))
+
+
+def add_dog_ears():
+    left_eyebrow = face_landmarks[0]['left_eyebrow']
+    right_eyebrow = face_landmarks[0]['right_eyebrow']
+    end_row = left_eyebrow[2][1]
+    start_row = end_row - 10
+    start_col = left_eyebrow[0][0]
+    end_col = right_eyebrow[4][0]
+    apply_sprite(doggy_ears, (start_row, end_row), (start_col, end_col))
 
 
 cam = cv2.VideoCapture(0)
@@ -62,6 +77,7 @@ while True:
     if len(face_locations):
         face_landmarks = face.face_landmarks(small_frame)
         add_nose_sprite(nose_sprite)
+        add_dog_ears()
 
     cv2.imshow("Frame", frame)
 
