@@ -8,7 +8,7 @@ doggy_tongue = cv2.imread("./sprites/doggy_tongue.png")
 mustache = cv2.imread("./sprites/mustache.png")
 rainbow = cv2.imread("./sprites/rainbow.png")
 hat = cv2.imread("./sprites/hat.png")
-what_filter = "mustache"
+what_filter = "doggy"
 
 # cv2.imshow("g", glasses)
 
