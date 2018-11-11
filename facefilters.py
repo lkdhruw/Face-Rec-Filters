@@ -12,6 +12,9 @@ what_filter = "doggy"
 
 # cv2.imshow("g", glasses)
 
+frame = None
+face_landmarks = None
+
 
 def apply_sprite(sprite, rows, cols):
     # @sprite = sprite to be added
@@ -19,6 +22,7 @@ def apply_sprite(sprite, rows, cols):
 
     # Segment the part of the image from the main frame
     # Eg: for nose, the whole nose part
+    global frame
     seg = frame[rows[0]*4:rows[1]*4, cols[0]*4: cols[1]*4]
     r, c, _ = seg.shape
 
@@ -47,10 +51,10 @@ def apply_sprite(sprite, rows, cols):
     frame[rows[0]*4:rows[1]*4, cols[0]*4: cols[1]*4] = dst
 
 
-def add_nose_sprite(nose_sprite):
+def add_dog_nose():
     nose_tip = face_landmarks[0]['nose_tip']
     nose_bridge = face_landmarks[0]['nose_bridge']
-    apply_sprite(nose_sprite,
+    apply_sprite(doggy_nose,
                  (nose_bridge[2][1], nose_tip[0][1]), (nose_tip[0][0], nose_tip[4][0]))
 
 
@@ -89,26 +93,7 @@ def add_mustache():
     apply_sprite(mustache, (start_row, end_row), (start_col, end_col))
 
 
-def apply_filters():
-    if what_filter == "doggy":
-        add_nose_sprite(doggy_nose)
-        add_dog_ears()
-    elif what_filter == "mustache":
-        add_mustache()
-        add_hat()
-
-
-cam = cv2.VideoCapture(0)
-cam.set(3,640)
-cam.set(4,480)
-
-while True:
-
-    _, frame = cam.read()
-    small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-
-    face_locations = face.face_locations(small_frame, model='hog')
-
+def find_face(face_locations):
     for top, right, bottom, left in face_locations:
         top *= 4
         right *= 4
@@ -116,21 +101,73 @@ while True:
         left *= 4
         cv2.rectangle(frame, (left, top), (right, bottom), (255, 0, 0), 2)
 
-    face_landmarks = []
+
+def apply_filters():
+    if what_filter == "doggy":
+        add_dog_nose()
+        add_dog_ears()
+    elif what_filter == "mustache":
+        add_mustache()
+        add_hat()
+
+
+def processFrame(_frame, filter):
+    small_frame = cv2.resize(_frame, (0, 0), fx=0.25, fy=0.25)
+    global frame
+    global face_landmarks
+
+    face_locations = face.face_locations(small_frame, model='hog')
+
+    print(filter)
 
     if len(face_locations):
         face_landmarks = face.face_landmarks(small_frame)
-        apply_filters()
+        frame = _frame
+        if filter == "doggy":
+            add_dog_ears()
+            add_dog_nose()
+        elif filter == "mustache":
+            add_mustache()
+            add_hat()
+        elif filter == "findface":
+            find_face(face_locations)
 
-    cv2.imshow("Frame", frame)
+    return _frame
 
-    pressed_key = cv2.waitKey(1) & 0xFF
-    if pressed_key == ord('q'):
-        break
-    elif pressed_key == ord('m'):
-        what_filter = "mustache"
-    elif pressed_key == ord('d'):
-        what_filter = "doggy"
 
-print(face_landmarks[0]['bottom_lip'])
-cv2.destroyAllWindows()
+if __name__ == "__main__":
+    cam = cv2.VideoCapture(0)
+    cam.set(3, 640)
+    cam.set(4, 480)
+
+    while True:
+
+        _, frame = cam.read()
+        small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+
+        face_locations = face.face_locations(small_frame, model='hog')
+
+        for top, right, bottom, left in face_locations:
+            top *= 4
+            right *= 4
+            bottom *= 4
+            left *= 4
+            cv2.rectangle(frame, (left, top), (right, bottom), (255, 0, 0), 2)
+
+        face_landmarks = []
+
+        if len(face_locations):
+            face_landmarks = face.face_landmarks(small_frame)
+            apply_filters()
+
+        cv2.imshow("Frame", frame)
+
+        pressed_key = cv2.waitKey(1) & 0xFF
+        if pressed_key == ord('q'):
+            break
+        elif pressed_key == ord('m'):
+            what_filter = "mustache"
+        elif pressed_key == ord('d'):
+            what_filter = "doggy"
+
+    cv2.destroyAllWindows()
