@@ -140,7 +140,7 @@ def processFrame(_frame, filter):
             add_dog_nose()
         elif filter == "mustache":
             add_mustache()
-            add_hat()
+            #add_hat()
         elif filter == "findface":
             find_face(face_locations)
 
