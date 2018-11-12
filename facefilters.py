@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 import face_recognition as face
 
-doggy_nose = cv2.imread("./sprites/wdoggy_nose.png")
-doggy_ears = cv2.imread("./sprites/wdoggy_ears.png")
+doggy_nose = cv2.imread("./sprites/doggy_nose.png")
+doggy_ears = cv2.imread("./sprites/doggy_ears.png")
 doggy_tongue = cv2.imread("./sprites/doggy_tongue.png")
 mustache = cv2.imread("./sprites/mustache.png")
 rainbow = cv2.imread("./sprites/rainbow.png")
@@ -68,7 +68,7 @@ def add_dog_ears():
     end_col = right_eyebrow[4][0]
     apply_sprite(doggy_ears, (start_row, end_row), (start_col, end_col))
 
-def add_hat():
+"""def add_glass():
     left_eye = face_landmarks[0]['left_eye']
     right_eye = face_landmarks[0]['right_eye']
     eyes = left_eye + right_eye
@@ -78,7 +78,7 @@ def add_hat():
     end_row = min(y_values) - 5 #-5
     start_col = min(x_values) - 5 #-15
     end_col = max(x_values) + 5 #+15
-    apply_sprite(glass, (start_row, end_row), (start_col, end_col))
+    apply_sprite(glass, (start_row, end_row), (start_col, end_col))"""
 
 """def add_hat():
     left_eyebrow = face_landmarks[0]['left_eyebrow']
@@ -120,7 +120,7 @@ def apply_filters():
         add_dog_ears()
     elif what_filter == "mustache":
         add_mustache()
-        add_hat()
+        #add_hat()
 
 
 def processFrame(_frame, filter):
