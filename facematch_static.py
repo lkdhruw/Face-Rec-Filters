@@ -2,6 +2,12 @@ import cv2
 import numpy as np
 import face_recognition
 
+import tkinter as tk
+from PIL import ImageTk, Image
+
+
+#"./sprites/donald.jpg", "./sprites/filter.jpg")
+
 known_image = face_recognition.load_image_file("./sprites/donald.jpg")
 unknown_image = face_recognition.load_image_file("./sprites/filter.jpg")
 

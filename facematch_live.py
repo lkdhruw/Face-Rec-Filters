@@ -6,15 +6,25 @@ cam.set(3, 640)
 cam.set(4, 480)
 
 # Load a sample picture and learn how to recognize it.
+
 vish = face_recognition.load_image_file("./sprites/pic2.jpg")
+donald = face_recognition.load_image_file("./sprites/donald.jpg")
+rihan = face_recognition.load_image_file("./sprites/pic4.jpg")
+
 vish_face_encoding = face_recognition.face_encodings(vish)[0]
+donald_face_encoding = face_recognition.face_encodings(donald)[0]
+rihan_face_encoding = face_recognition.face_encodings(rihan)[0]
 
 # Create arrays of known face encodings and their names
 known_face_encodings = [
-    vish_face_encoding
+    vish_face_encoding,
+    rihan_face_encoding,
+    donald_face_encoding
 ]
 known_face_names = [
-    "Vishhvak"
+    "Vishhvak",
+    "Rihan",
+    "Donald",
 ]
 
 face_locations = []
