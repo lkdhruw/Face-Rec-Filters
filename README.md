@@ -1,2 +1,2 @@
 # Image-Processing
-My journey to Image Processing Problems.
+Face Recognition & Face Filters Project for Course - Digital Image Processing.
